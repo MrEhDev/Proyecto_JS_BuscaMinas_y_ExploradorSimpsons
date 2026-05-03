@@ -7,6 +7,8 @@ const btnStart = document.querySelector('#btn-start');
 const inputRows = document.querySelector('#input-rows');
 const inputCols = document.querySelector('#input-cols');
 const inputMines = document.querySelector('#input-mines');
+const timeDisplay = document.querySelector('#time-display');
+const bestTimeDisplay = document.querySelector('#best-time-display');
 
 // Variables de estado
 let board = [];
@@ -18,8 +20,23 @@ let mines = 10;
 let isGameOver = false;
 let cellsRevealed = 0;
 
+// Variables de tiempo
+let timerInterval;
+let timeElapsed = 0;
+let timerStarted = false;
+
 // Inicializa una nueva partida
-function initGame() {
+function initGame(forceNew = false) {
+    stopTimer();
+
+    // Si no forzamos partida nueva, intento cargar la guardada
+    if (!forceNew && loadGame()) {
+        renderBoard(); // Dibujo el tablero restaurado
+        updateBestTimeDisplay(); // Muestro el récord de esta categoría
+        if (timerStarted && !isGameOver) startTimer();
+        return; 
+    }
+
     rows = parseInt(inputRows.value);
     cols = parseInt(inputCols.value);
     mines = parseInt(inputMines.value);
@@ -27,8 +44,13 @@ function initGame() {
     
     isGameOver = false;
     cellsRevealed = 0;
-    boardElement.innerHTML = '';
-    boardElement.style.setProperty('--cols', cols);
+    timeElapsed = 0;
+    timerStarted = false;
+    timeDisplay.textContent = timeElapsed;
+    updateBestTimeDisplay();
+
+    // Limpio el guardado anterior porque estoy empezando de cero
+    localStorage.removeItem("minesweeper_save");
 
     // Genero matriz vacía
     board = []; 
@@ -71,23 +93,104 @@ function initGame() {
     console.log("Contenedor del tablero (DOM):", boardElement);
     console.log("Matriz lógica completa:", board);
 
-    // Bucle anidado para inyectar en el DOM
+    renderBoard();
+}
+
+// Función independiente para dibujar el DOM basándome en mi variable 'board'
+function renderBoard() {
+    boardElement.innerHTML = ''; 
+    boardElement.style.setProperty('--cols', cols);
+
     for (let i = 0; i < rows; i++) {
         for (let j = 0; j < cols; j++) {
+            const cellData = board[i][j];
             const cell = document.createElement("div"); 
             cell.classList.add("cell"); 
             cell.dataset.row = i; 
             cell.dataset.col = j; 
-            
-            // Escucho Click izquierdo normal
-            cell.addEventListener("click", handleCellClick); 
-            
-            // Escucho Click derecho (contextmenu) para las banderas
-            cell.addEventListener("contextmenu", handleRightClick);
 
+            // Si cargo partida, aplico las clases visuales de inmediato
+            if (cellData.revealed) {
+                cell.classList.add("revealed");
+                if (cellData.isMine) {
+                    cell.classList.add("mine");
+                    cell.textContent = "💣";
+                } else if (cellData.adjacentMines > 0) {
+                    cell.textContent = cellData.adjacentMines;
+                }
+            } else if (cellData.flagged) {
+                cell.classList.add("flagged");
+                cell.textContent = "🚩";
+            }
+            
+            cell.addEventListener("click", handleCellClick); 
+            cell.addEventListener("contextmenu", handleRightClick);
             boardElement.appendChild(cell); 
         }
     }
+}
+
+// --- TEMPORIZADOR Y LOCALSTORAGE ---
+
+function startTimer() {
+    timerInterval = setInterval(() => {
+        if (!isGameOver) {
+            timeElapsed++;
+            timeDisplay.textContent = timeElapsed;
+            saveGame(); // Guardo cada segundo
+        }
+    }, 1000);
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+}
+
+// Guardo la partida en crudo transformando el objeto a JSON
+function saveGame() {
+    if (isGameOver) return; 
+    const gameState = { board, rows, cols, mines, cellsRevealed, timeElapsed, timerStarted };
+    localStorage.setItem('minesweeper_save', JSON.stringify(gameState));
+}
+
+// Recupero la partida de la sesión anterior
+function loadGame() {
+    const saved = JSON.parse(localStorage.getItem('minesweeper_save'));
+    if (saved) {
+        board = saved.board;
+        rows = saved.rows;
+        cols = saved.cols;
+        mines = saved.mines;
+        cellsRevealed = saved.cellsRevealed;
+        timeElapsed = saved.timeElapsed;
+        timerStarted = saved.timerStarted;
+        
+        // Actualizo la vista de mis inputs y reloj
+        inputRows.value = rows;
+        inputCols.value = cols;
+        inputMines.value = mines;
+        timeDisplay.textContent = timeElapsed;
+        return true;
+    }
+    return false;
+}
+
+// Actualizo en el DOM el mejor tiempo según las reglas (ej: 8x8 con 10 minas)
+function updateBestTimeDisplay() {
+    const key = `best_time_${rows}_${cols}_${mines}`;
+    const best = localStorage.getItem(key);
+    bestTimeDisplay.textContent = best ? best : '---';
+}
+
+// Valido si he batido el récord
+function checkBestTime() {
+    const key = `best_time_${rows}_${cols}_${mines}`;
+    const best = localStorage.getItem(key);
+    if (!best || timeElapsed < parseInt(best)) {
+        localStorage.setItem(key, timeElapsed);
+        return true;
+    }
+    return false;
 }
 
 // Función auxiliar para contar minas alrededor de una coordenada
@@ -114,6 +217,10 @@ function countMines(row, col) {
 function handleCellClick(event) {
     // Si he perdido o ganado, ignoro los clics
     if (isGameOver) return;
+    if (!timerStarted) {
+        startTimer();
+        timerStarted = true;
+    }
 
     const cell = event.target; 
     const fila = parseInt(cell.dataset.row);
@@ -131,7 +238,7 @@ function handleCellClick(event) {
     revealCell(fila, columna);
 }
 
-// NUEVO: Proceso el clic derecho del usuario para poner banderas
+// Proceso el clic derecho del usuario para poner banderas
 function handleRightClick(event) {
     // Evito el comportamiento por defecto (que salga el menú contextual del navegador) [1]
     event.preventDefault(); 
@@ -222,20 +329,33 @@ function gameOver() {
     }
     
     // Lanzo un aviso básico al navegador (podremos mejorarlo visualmente más tarde)
-    setTimeout(() => alert("¡Boom! Has pisado una mina. Fin de la partida."), 100);
+    setTimeout(() => alert("¡Boom! Has pisado una mina en el segundo " + timeElapsed + ". Fin de la partida."), 100);
 }
 
 // Compruebo si he destapado todas mis casillas seguras
 function checkWin() {
-    // Calculo cuántas casillas no son minas
     const totalSafeCells = (rows * cols) - mines;
-    
     if (cellsRevealed === totalSafeCells) {
         isGameOver = true;
-        setTimeout(() => alert("¡Módulo completado! Has desactivado la zona."), 100);
+        stopTimer();
+        localStorage.removeItem("minesweeper_save"); // Borro guardado al ganar
+        
+        // Verifico el récord
+        const isNewRecord = checkBestTime();
+        updateBestTimeDisplay();
+
+        setTimeout(() => {
+            let msg = `¡Módulo completado! Has desactivado la zona en ${timeElapsed} segundos.`;
+            if (isNewRecord) {
+                msg += `\n¡NUEVO RÉCORD de tiempo para la categoría ${rows}x${cols} con ${mines} minas!`;
+            }
+            alert(msg);
+        }, 100);
     }
 }
 
-// Escucho mi botón y lanzo la partida inicial
-btnStart.addEventListener('click', initGame);
-initGame();
+// Escucho eventos generales
+btnStart.addEventListener('click', () => initGame(true));
+
+// Cuando carga la página, arranco verificando si hay guardado
+window.addEventListener('DOMContentLoaded', () => initGame(false));
