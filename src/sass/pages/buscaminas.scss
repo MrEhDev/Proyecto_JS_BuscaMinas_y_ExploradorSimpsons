@@ -1,0 +1,104 @@
+@use '../variables' as *;
+// Contenedor principal del juego
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    width: 100%;
+}
+
+.game-header {
+    text-align: center;
+    margin-bottom: 1rem;
+
+    .game-instructions {
+        margin: 1rem auto 2rem auto;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 5px;
+        max-width: 500px;
+        line-height: 1.5;
+        border-left: 4px solid $accent-color;
+    }
+}
+
+// Panel de controles
+.controls {
+    margin: 2rem 0;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid $glow-color;
+
+    // Inputs numéricos
+    input {
+        width: 50px;
+        background: $bg-color;
+        color: $text-color;
+        border: 1px solid $accent-color;
+        text-align: center;
+        padding: 5px;
+    }
+}
+
+// Cuadrícula del tablero 
+.board {
+    display: grid;
+    grid-template-columns: repeat(var(--cols), 35px);
+    gap: 2px;
+    background-color: #30363d;
+    padding: 8px;
+    border-radius: 5px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.8);
+
+    // Cada celda individual
+    .cell {
+        width: 35px;
+        height: 35px;
+        background-color: #8b949e;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+
+        // Efecto hover
+        &:hover {
+            filter: brightness(1.15); 
+        }
+
+        // Estilo cuando revelo una celda segura
+        &.revealed {
+            background-color: #c9d1d9;
+            color: $bg-color;
+            font-weight: bold;
+            cursor: default;
+            // Centro el número o icono
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+            // Quito el efecto hover para que parezca "hundida"
+            &:hover {
+                filter: none;
+            }
+        }
+
+        // Estilo especial si revelo una bomba
+        &.mine {
+            background-color: #ff5858;
+            font-size: 1.2rem;
+        }
+
+        // Casillas con bandera
+        &.flagged {
+            background-color: #d29922; // Tono anaranjado para la bandera
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+        }
+    }
+}

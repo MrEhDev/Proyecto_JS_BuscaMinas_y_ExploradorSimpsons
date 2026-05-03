@@ -1,0 +1,66 @@
+@use 'variables' as *;
+@use 'pages/buscaminas';
+
+// Reset básico
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+// Estilos del body
+body {
+    background-color: $bg-color;
+    color: $text-color;
+    font-family: 'Courier New', Courier, monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.glitch-title {
+    font-size: 3rem;
+    color: $accent-color;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 10px $glow-color;
+    text-align: center;
+}
+
+.btn-tech {
+    display: inline-block;
+    text-decoration: none;
+    color: $bg-color;
+    background-color: $accent-color;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px $glow-color;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    font-size: 1rem;
+
+    &:hover {
+        filter: brightness(1.15);
+        box-shadow: 0 0 25px $glow-color;
+        transform: translateY(-2px);
+    }
+}
+// --- ESTILOS ESPECÍFICOS DEL INDEX (Home) ---
+
+.home-container {
+    text-align: center;
+    
+    p {
+        margin-bottom: 2rem;
+        font-size: 1.2rem;
+    }
+}
+
+.nav-menu {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+}

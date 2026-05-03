@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Buscaminas</title>
+</head>
+<body>
+    <!-- Contenedor principal del juego -->
+    <main class="game-container">
+        <header class="game-header">
+            <h1 class="glitch-title">Módulo: Buscaminas💣</h1>
+            
+            <!-- Añado la explicación del juego -->
+            <p class="game-instructions">
+                <strong>Misión:</strong> Despeja todas las casillas seguras sin detonar ninguna bomba.<br><br>
+                <strong>¿Cómo jugar?:</strong> Los números que aparecen al revelar una casilla indican la cantidad exacta de minas ocultas en las 8 casillas de su alrededor (arriba, abajo, lados y diagonales). Usa esa información y la lógica para deducir qué casillas son seguras y cuáles esconden una trampa.<br><br>
+                <strong>Controles:</strong> <em>Click Izquierdo</em> para revelar una zona. <em>Click Derecho</em> para colocar/quitar una bandera de advertencia 🚩 donde creas firmemente que hay una mina.
+            </p>
+
+            <!-- Menú principal -->
+            <a href="./index.html" class="btn-tech">Volver al inicio</a>
+        </header>
+
+        <!-- Controles para el tamaño y dificultad -->
+        <section class="controls">
+            <label>Filas: <input type="number" id="input-rows" value="8" min="5" max="20"></label>
+            <label>Columnas: <input type="number" id="input-cols" value="8" min="5" max="20"></label>
+            <label>Minas: <input type="number" id="input-mines" value="10" min="1"></label>
+            <button id="btn-start" class="btn-tech">Generar Tablero</button>
+        </section>
+
+        <!-- Cuadrícula desde JS -->
+        <section id="board" class="board"></section>
+    </main>
+
+    <!-- Script específico del juego -->
+    <script type="module" src="/src/js/buscaminas.js"></script>
+</body>
+</html>
