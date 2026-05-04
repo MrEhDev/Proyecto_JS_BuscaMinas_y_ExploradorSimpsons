@@ -1,5 +1,11 @@
 @use '../variables' as *;
-// Contenedor principal del juego
+
+body.buscaminas-layout {
+    align-items: flex-start; 
+    padding-top: 1rem; 
+    padding-bottom: 3rem; 
+    overflow-y: auto; 
+}
 .game-container {
     display: flex;
     flex-direction: column;
