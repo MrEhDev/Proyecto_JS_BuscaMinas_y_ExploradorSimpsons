@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simpsons Explorer</title>
+    <link rel="icon" type="image/png" href="/Proyecto_JS_BuscaMinas_y_ExploradorSimpsons/assets/donut-CJtw3l7Q.png"> 
+  <script type="module" crossorigin src="/Proyecto_JS_BuscaMinas_y_ExploradorSimpsons/assets/simpsons-k1KlLm0t.js"></script>
+  <link rel="modulepreload" crossorigin href="/Proyecto_JS_BuscaMinas_y_ExploradorSimpsons/assets/main-CMjvGjll.js">
+  <link rel="stylesheet" crossorigin href="/Proyecto_JS_BuscaMinas_y_ExploradorSimpsons/assets/main-cOaws6Fy.css">
+</head>
+  <body class="simpsons-layout">
+    <div class="sticky-wrapper">
+      <div class="explorer-container">
+
+        <!-- Header: Incluye el titulo y el menú nav -->
+        <header class="explorer-header">
+          <h1 class="glitch-title">Simpsons Explorer 🍩</h1>
+          <a href="./index.html" class="btn-tech">Volver al inicio</a>
+
+          <nav class="tabs">
+            <button class="tab-btn active" data-tab="tab-characters">Personajes</button>
+            <button class="tab-btn" data-tab="tab-episodes">Episodios 📺</button>
+            <button class="tab-btn" data-tab="tab-favorites">Favoritos 💛</button>
+          </nav>
+        </header>
+
+        <!-- Filter panel: Incluye los inputs de filtrado -->
+        <section class="filters-panel">
+          <input type="text" id="input-search" placeholder="Buscar personaje...">
+
+          <select id="select-status">
+            <option value="">Cualquier estado</option>
+            <option value="Alive">Vivo</option>
+            <option value="Deceased">Muerto</option>
+          </select>
+
+          <select id="select-gender">
+            <option value="">Cualquier género</option>
+            <option value="Male">Hombre</option>
+            <option value="Female">Mujer</option>
+          </select>
+
+          <select id="select-season" class="hidden">
+            <option value="">Cualquier temporada</option>
+            <option value="1">Temporada 1</option>
+            <option value="2">Temporada 2</option>
+            <option value="3">Temporada 3</option>
+          </select>
+        
+        </section>
+
+      </div>
+    </div>
+
+    <!-- Contenido -->
+    <main class="explorer-container">
+      <!-- Personajes -->
+      <section id="tab-characters" class="view-section active">
+        <div id="characters-grid" class="responsive-grid"></div>
+        <p id="loading-msg" class="loading">Conectando con Springfield...</p>
+        <button id="btn-load-more" class="btn-tech load-more hidden">Cargar Más Personajes</button>
+      </section>
+      <!-- Episodios -->
+      <section id="tab-episodes" class="view-section hidden">
+        <p id="loading-ep-msg" class="loading">Cargando episodios...</p>
+        <div id="episodes-grid" class="responsive-grid"></div>
+        <p id="loading-ep-msg" class="loading">Cargando episodios...</p>
+        <button id="btn-load-more-episodes" class="btn-tech load-more hidden">Cargar Más Episodios</button>
+      </section>
+      <!-- Favoritos -->
+      <section id="tab-favorites" class="view-section hidden">
+        <div id="favorites-grid" class="responsive-grid"></div>
+        <p id="no-favs-msg" class="loading hidden">No tienes personajes favoritos guardados.</p>
+      </section>
+    </main>
+
+    <!-- Ventana modal oculta -->
+    <div id="character-modal" class="modal hidden">
+      <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <div id="modal-info"></div>
+      </div>
+    </div>
+
+    <!-- Botón flotante para subir -->
+    <button id="btn-scroll-top" class="btn-scroll-top hidden">⬆️</button>
+
+    <!-- Script -->
+  </body>
+</html>
